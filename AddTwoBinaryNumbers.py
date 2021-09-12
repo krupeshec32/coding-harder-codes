@@ -27,4 +27,4 @@ class AddTwoBinaryNumbers:
 
 x=AddTwoBinaryNumbers()
 
-assert(x.addBinary("1","1")=="10")
+assert(x.addBinary("100","100")=="100")
