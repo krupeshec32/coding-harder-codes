@@ -21,7 +21,9 @@ class FindLongestPalindromicSubstring:
             # print(inputStr)
             return inputStr
         for i in range(0, len(inputStr)):
-            for j in range(i+1, len(inputStr)):
+            # we need len(inputStr)+1 below because temp[i:j] substring need that
+            # to include last character of the string
+            for j in range(i+1, len(inputStr)+1):
                 tempStr = inputStr[i:j]
                 reversedStr = tempStr[::-1]
                 if tempStr == reversedStr:

@@ -1,28 +1,47 @@
 class MergeSort:
 
-    def merge_sort(self,array):
-        ret = []
-        if len(array) == 1:
-            return array;
-        half = len(array) // 2
-        lower = self.merge_sort(array[:half])
-        upper = self.merge_sort(array[half:])
-        lower_len = len(lower)
-        upper_len = len(upper)
-        i = 0
-        j = 0
-        while i != lower_len or j != upper_len:
-            if i != lower_len and (j == upper_len or lower[i] < upper[j]):
-                ret.append(lower[i])
+    def mergeSort(self,myList):
+        if len(myList) > 1:
+            mid = len(myList) // 2
+            left = myList[:mid]
+            right = myList[mid:]
+
+            # Recursive call on each half
+            self.mergeSort(left)
+            self.mergeSort(right)
+
+            # Two iterators for traversing the two halves
+            i = 0
+            j = 0
+
+            # Iterator for the main list
+            k = 0
+
+            while i < len(left) and j < len(right):
+                if left[i] <= right[j]:
+                    # The value from the left half has been used
+                    myList[k] = left[i]
+                    # Move the iterator forward
+                    i += 1
+                else:
+                    myList[k] = right[j]
+                    j += 1
+                # Move to the next slot
+                k += 1
+
+            # For all the remaining values
+            while i < len(left):
+                myList[k] = left[i]
                 i += 1
-            else:
-                ret.append(upper[j])
+                k += 1
+
+            while j < len(right):
+                myList[k] = right[j]
                 j += 1
+                k += 1
 
-        return ret
-
-array = [4, 2, 3, 8, 8, 43, 6, 1, 0]
+myList = [54, 26, 93, 17, 77, 31, 44, 55, 20]
 p=MergeSort()
-ar=p.merge_sort(array)
-print (" ".join(str(x) for x in ar))
+p.mergeSort(myList)
+print(myList)
 
