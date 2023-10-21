@@ -34,4 +34,4 @@ class PerformDivideWithOutDivideORMod:
         return -quotient if negatives != 1 else quotient
 
 x=PerformDivideWithOutDivideORMod()
-print(x.divide(2,7))
+print(x.divide(12,7))

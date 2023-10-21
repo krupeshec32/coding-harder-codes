@@ -51,4 +51,4 @@ graph = {
 x = Practice(graph)
 #x.getDFS(graph, 'A')
 print('*******')
-x.getBFS(graph,'A')
+x.getDFS(graph,'A')

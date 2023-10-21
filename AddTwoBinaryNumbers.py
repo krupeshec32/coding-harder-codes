@@ -8,8 +8,10 @@ class AddTwoBinaryNumbers:
         answer = []
         for i in range(n - 1, -1, -1):
             if a[i] == '1':
+                print(a[i])
                 carry += 1
             if b[i] == '1':
+                print(b[i])
                 carry += 1
 
             if carry % 2 == 1:
@@ -27,4 +29,4 @@ class AddTwoBinaryNumbers:
 
 x=AddTwoBinaryNumbers()
 
-assert(x.addBinary("100","100")=="100")
+assert(x.addBinary("100","100")=="1000")

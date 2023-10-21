@@ -17,3 +17,8 @@ class MinParanthesisRemoval:
                 if i not in indexes_to_remove:
                     string_builder.append(c)
             return "".join(string_builder)
+
+
+#Input: s = "lee(t(c)o)de)"
+#stack=[3,5]
+# when position 7 and 9 comes, stack is not empty, so it will pop and stack=[]

@@ -24,31 +24,26 @@ Anything else
 
 
 class FindValidNumber:
-
-    def __init__(self, input):
-        self.input = input
-
-    def checkInput(self, input):
-        if input.isdigit():
-            return True
-        elif input.find('.') >= 0:
-            if input.index('.') == 0 and input[1::].isdigit():
-                return True
-            elif input.count('.') == 1:
-                l1 = input.split('.')
-                flag = False
-                for i in l1:
-                    if i.isdigit():
-                        flag = True
-                    else:
-                        return False
-                return flag
-        elif input.find('+') >= 0 and input.index('+') == 0 and input[1::].isdigit():
-            return True
-        elif input.find('-') >= 0 and input.index('-') == 0 and input[1::].isdigit():
-            return True
-        else:
-            return False
+    def isNumber(self, s: str) -> bool:
+        seenDigit = seenExpo = seenSign = seenDot = False
+        for i in range(len(s)):
+            if s[i].isdigit():
+                seenDigit = True
+            elif s[i] in ["+", "-"]:
+                if i > 0 and s[i - 1] != "e" and s[i - 1] != "E":
+                    return False
+            elif s[i] in ["e", "E"]:
+                if seenExpo or not seenDigit:
+                    return False
+                seenExpo = True
+                seenDigit = False
+            elif s[i] == ".":
+                if seenSign or seenExpo:
+                    return False
+                seenDot = True
+            else:
+                return False
+        return seenDigit
 
 
 x = FindValidNumber('1E2')

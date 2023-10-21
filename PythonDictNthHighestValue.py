@@ -25,6 +25,7 @@ class PythonDictNthHigestValue:
         print(valRequired)
 
         for i in inputDictSortedbyKey:
+            print(i)
             if i[1] == valRequired:
                 return i
 

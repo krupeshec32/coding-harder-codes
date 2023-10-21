@@ -42,5 +42,5 @@ class SumOfTwoBinaryNumbers:
 
         print(result.zfill(max_len))
 
-p=SumOfTwoBinaryNumbers('11','1')
-p.getSum('11','1')
+p=SumOfTwoBinaryNumbers('111','1111')
+p.getSum('111','111')

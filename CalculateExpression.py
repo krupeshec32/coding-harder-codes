@@ -1,55 +1,29 @@
 class CalculateExpression:
-    def calculate(self, s: str) -> int:
+    def calculate(self, s):
+        def update(op, v):
+            if op == "+": stack.append(v)
+            if op == "-": stack.append(-v)
+            if op == "*": stack.append(stack.pop() * v)  # for BC II and BC III
+            if op == "/": stack.append(int(stack.pop() / v))  # for BC II and BC III
 
-        stack = []
-        operand = 0
-        res = 0 # For the on-going result
-        sign = 1 # 1 means positive, -1 means negative
+        it, num, stack, sign = 0, 0, [], "+"
 
-        for ch in s:
-            if ch.isdigit():
+        while it < len(s):
+            if s[it].isdigit():
+                num = num * 10 + int(s[it])
+            elif s[it] in "+-*/":
+                update(sign, num)
+                num, sign = 0, s[it]
+            elif s[it] == "(":  # For BC I and BC III
+                num, j = self.calculate(s[it + 1:])
+                it = it + j
+            elif s[it] == ")":  # For BC I and BC III
+                update(sign, num)
+                return sum(stack), it + 1
+            it += 1
+        update(sign, num)
+        return sum(stack)
 
-                # Forming operand, since it could be more than one digit
-                operand = (operand * 10) + int(ch)
 
-            elif ch == '+':
-
-                # Evaluate the expression to the left,
-                # with result, sign, operand
-                res = res+(sign * operand)
-
-                # Save the recently encountered '+' sign
-                sign = 1
-
-                # Reset operand
-                operand = 0
-
-            elif ch == '-':
-
-                res = res+(sign * operand)
-                sign = -1
-                operand = 0
-
-            elif ch == '(':
-
-                # Push the result and sign on to the stack, for later
-                # We push the result first, then sign
-                stack.append(res)
-                stack.append(sign)
-
-                # Reset operand and result, as if new evaluation begins for the new sub-expression
-                sign = 1
-                res = 0
-
-            elif ch == ')':
-                res = res+(sign * operand)
-                res = res*(stack.pop()) # stack pop 1, sign
-                res = res+(stack.pop()) # stack pop 2, operand
-
-                # Reset the operand
-                operand = 0
-
-        return res + sign * operand
-
-x=CalculateExpression()
-print(x.calculate("(1+(4+5+2)-3)+(6+8)"))
+x = AdvanceCalculator()
+print(x.calculate("(2*3)+4"))
