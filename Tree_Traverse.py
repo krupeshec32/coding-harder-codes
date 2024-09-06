@@ -1,8 +1,8 @@
 from Node import Node
 '''
-Inorder (Left, Root, Right) : 4 2 5 1 3 
+Inorder (Left, Root, Right) : 4, 2, 5, 1, 3
 Preorder (Root, Left, Right) : 1 2 4 5 3 
-Postorder (Left, Right, Root) : 4
+Postorder (Left, Right, Root) : 4, 5, 2, 3, 1
 '''
 
 class Tree_Traverse():
@@ -32,12 +32,18 @@ class Tree_Traverse():
         print(node.data)
 
 a = Tree_Traverse(0)
-root = Node(4)
+root = Node(1)
 root.left = Node(2)
-root.right = Node(5)
-root.left.left = Node(1)
-root.left.right = Node(3)
+root.right = Node(3)
+root.left.left = Node(4)
+root.left.right = Node(5)
 #root.right.left = Node(5)
 #root.right.right = Node(6)
 
-a.inOrder(root)
+'''
+      1
+    2    3  
+ 4   5
+'''
+
+a.postOrder(root)
