@@ -2,12 +2,12 @@ from collections import Counter
 from collections import deque
 
 
-class Blind75:
-    class LinkNode:
-        def __init__(self, val, next=None):
-            self.val = val
-            self.next = next
+class LinkNode:
+    def __init__(self, val, next=None):
+        self.val = val
+        self.next = next
 
+class Blind75:
     def printdemo(self):
         print('demo')
 
@@ -302,10 +302,10 @@ class Blind75:
         new_node.next
 
     def get_linkedList(self):
-        x = Test.LinkNode(0)
-        x.next = Test.LinkNode(1)
-        x.next.next = Test.LinkNode(2)
-        x.next.next.next = Test.LinkNode(3)
+        x = Blind75.LinkNode(0)
+        x.next = Blind75.LinkNode(1)
+        x.next.next = Blind75.LinkNode(2)
+        x.next.next.next = Blind75.LinkNode(3)
         return x
 
     # 0-->1--> 2 --> 3
@@ -325,7 +325,7 @@ class Blind75:
         return input
 
     def add_node_at_position(self, input, data, position):
-        new_node = Test.LinkNode(data)
+        new_node = Blind75.LinkNode(data)
         while input and position == 0:
             new_node.next = input
             return new_node
@@ -385,13 +385,15 @@ class Blind75:
     Input: [1,2]
     Output: [[], [1], [2], [1,2]]
     '''
-    def get_subsets(self,input):
-        result =[]
-        def backtrack(start,path):
+
+    def get_subsets(self, input):
+        result = []
+
+        def backtrack(start, path):
             result.append(path[:])  # <- Here is where we "collect" the subset
-            for i in range(start,len(input)):
+            for i in range(start, len(input)):
                 path.append(input[i])
-                backtrack(i+1,path)  # explore
+                backtrack(i + 1, path)  # explore
                 path.pop()  # un-choose (backtrack)
 
         backtrack(0, [])
@@ -401,12 +403,141 @@ class Blind75:
     # i.e. input: bmadam, output: madam
     # i.e. input: madamb, output: madam
 
+    '''
+    Rotate matrix 
+    Input : matrix = [[1,2,3],[4,5,6],[7,8,9]]
+    Output: [[7,4,1],[8,5,2],[9,6,3]] 
+    '''
 
+    def rotate(self, matrix):
+        n = len(matrix)
+        for i in range(n):  # this will convert row columns into row
+            for j in range(i, n):
+                matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+        for row in matrix:
+            row.reverse()
+            # OR
+            '''
+        for i in range(n):
+            for j in range(n // 2):
+                matrix[i][j], matrix[i][n - 1 - j] = matrix[i][n - 1 - j], matrix[i][j]
+            '''
+        return matrix
+
+    '''
+
+    Problem 21: Given an array of intervals intervals where intervals[i] = [starti, endi], return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.
+
+    Note that intervals which only touch at a point are non-overlapping. For example, [1, 2] and [2, 3] are non-overlapping.
+
+    Example 1:
+
+    Input: intervals = [[1,2],[2,3],[3,4],[1,3]]
+    Output: 1
+    Explanation: [1,3] can be removed and the rest of the intervals are non-overlapping.
+    Example 2:
+
+    Input: intervals = [[1,2],[1,2],[1,2]]
+    Output: 2
+    Explanation: You need to remove two [1,2] to make the rest of the intervals non-overlapping.
+    Example 3:
+
+    Input: intervals = [[1,2],[2,3]]
+    Output: 0
+    Explanation: You don't need to remove any of the intervals since they're already non-overlapping.
+    '''
+    def erase_overlap_interval(self, input):
+        input.sort(key=lambda x: x[1])
+        count = 0
+        prev_end = float('-inf')
+        for start, end in input:
+            if start >= prev_end:
+                prev_end = end
+            else:
+                count = count + 1
+        return count
+    '''
+    Given an integer array nums, find the subarray with the largest sum, and return its sum.
+    Example 1:
+    
+    Input: nums = [-2,1,-3,4,-1,2,1,-5,4]..give me python code
+    Output: 6
+    Explanation: The subarray [4,-1,2,1] has the largest sum 6.
+    Example 2:
+    
+    Input: nums = [1]
+    Output: 1
+    Explanation: The subarray [1] has the largest sum 1.
+    '''
+
+    def max_subarray_sum(nums):
+        max_current = max_global = nums[0]
+
+        for num in nums[1:]:
+            max_current = max(num, max_current + num)
+            max_global = max(max_global, max_current)
+
+        return max_global
+
+    '''
+    Spiral Matrix
+    Input: matrix = [[1,2,3],[4,5,6],[7,8,9]]
+    Output: [1,2,3,6,9,8,7,4,5]
+    
+    '''
+
+    def spiralOrder(matrix):
+        result = []
+        if not matrix:
+            return result
+
+        top, bottom = 0, len(matrix)
+        left, right = 0, len(matrix[0])
+
+        while top < bottom and left < right:
+            # Traverse top row
+            for i in range(left, right):
+                result.append(matrix[top][i])
+            top += 1
+
+            # Traverse right column
+            for i in range(top, bottom):
+                result.append(matrix[i][right - 1])
+            right -= 1
+
+            # Traverse bottom row
+            if top < bottom:
+                for i in range(right - 1, left - 1, -1):
+                    result.append(matrix[bottom - 1][i])
+                bottom -= 1
+
+            # Traverse left column
+            if left < right:
+                for i in range(bottom - 1, top - 1, -1):
+                    result.append(matrix[i][left])
+                left += 1
+
+        return result
 
 
 x = Blind75()
+# Example
+matrix = [[1,2,3],[4,5,6],[7,8,9]]
+print(x.spiralOrder(matrix))  # Output: [1,2,3,6,9,8,7,4,5]
+
+
+# Example usage:
+print(x.max_subarray_sum([-2,1,-3,4,-1,2,1,-5,4]))  # Output: 6
+print(x.max_subarray_sum([1]))                     # Output: 1
+
+
+
 # print(x.get_decode_string('4#lint4#code4#love3#you'))
-print(x.get_subsets([2, 3, 6, 7]))
+# print(x.get_subsets([2, 3, 6, 7]))
+matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+#print(x.rotate(matrix))
+print(x.erase_overlap_interval([[1,2],[3,4],[2,5],[8,9]]))
+
 '''
 linkedList = x.get_linkedList()
 x.print(linkedList)

@@ -19,7 +19,9 @@ Input:  "aabbccdde"
 Output: "e"
 Explanation:
 'e' is the only character that appears once all others repeat
-'''
+
 class FirstNonRepeatingCharacter:
     def get_first_non_repeated(self,input):
 
+'''
+''''''
