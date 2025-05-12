@@ -25,5 +25,5 @@ class CalculateExpression:
         return sum(stack)
 
 
-x = AdvanceCalculator()
-print(x.calculate("(2*3)+4"))
+x = CalculateExpression()
+print(x.calculate("4*2"))

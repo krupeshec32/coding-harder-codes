@@ -1,0 +1,7 @@
+pipeline:
+  TOPSTOCK:
+    - SQL1.sql
+    - SQL2.sql
+  VIZPICK:
+    - SQL2.sql
+    - SQL4.sql
