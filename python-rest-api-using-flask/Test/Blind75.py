@@ -7,6 +7,14 @@ class LinkNode:
         self.val = val
         self.next = next
 
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
 class Blind75:
     def printdemo(self):
         print('demo')
@@ -446,6 +454,7 @@ class Blind75:
     Output: 0
     Explanation: You don't need to remove any of the intervals since they're already non-overlapping.
     '''
+
     def erase_overlap_interval(self, input):
         input.sort(key=lambda x: x[1])
         count = 0
@@ -456,6 +465,7 @@ class Blind75:
             else:
                 count = count + 1
         return count
+
     '''
     Given an integer array nums, find the subarray with the largest sum, and return its sum.
     Example 1:
@@ -499,51 +509,163 @@ class Blind75:
             for i in range(left, right):
                 result.append(matrix[top][i])
             top += 1
-
             # Traverse right column
             for i in range(top, bottom):
                 result.append(matrix[i][right - 1])
             right -= 1
-
             # Traverse bottom row
             if top < bottom:
                 for i in range(right - 1, left - 1, -1):
                     result.append(matrix[bottom - 1][i])
                 bottom -= 1
-
             # Traverse left column
             if left < right:
                 for i in range(bottom - 1, top - 1, -1):
                     result.append(matrix[i][left])
                 left += 1
-
         return result
 
+    '''
+    55. Jump Game
+    You are given an integer array nums. You are initially positioned at the array's first index, and each element in the array represents your maximum jump length at that position.
+    Return true if you can reach the last index, or false otherwise.
+    Example 1:
+    
+    Input: nums = [2,3,1,1,4]
+    Output: true
+    Explanation: Jump 1 step from index 0 to 1, then 3 steps to the last index.
+    Example 2:
+    
+    Input: nums = [3,2,1,0,4]
+    Output: false
+    Explanation: You will always arrive at index 3 no matter what. Its maximum jump length is 0, which makes it impossible to reach the last index.
+    '''
+
+    def canJump(self, nums):
+        max_reach = 0
+        for i, num in enumerate(nums):
+            if i > max_reach:
+                return False
+            max_reach = max(max_reach, i + num)
+        return True
+
+    '''
+    
+    Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, 
+    and return an array of the non-overlapping intervals that cover all the intervals in the input.
+    
+    Example 1:
+    
+    Input: intervals = [[1,3],[2,6],[8,10],[15,18]]
+    Output: [[1,6],[8,10],[15,18]]
+    Explanation: Since intervals [1,3] and [2,6] overlap, merge them into [1,6].
+    '''
+
+    def merge_intervals(self, intervals):
+        if not intervals:
+            return []
+        # Sort intervals based on the starting value
+        intervals.sort(key=lambda x: x[0])
+        merged = [intervals[0]]
+        for current in intervals[1:]:
+            last = merged[-1]
+            # Check for overlap
+            if current[0] <= last[1]:
+                # Merge intervals
+                last[1] = max(last[1], current[1])
+            else:
+                merged.append(current)
+        return merged
+
+    '''
+    57. Insert Interval
+    You are given an array of non-overlapping intervals intervals where 
+    intervals[i] = [starti, endi] represent the start and the end of the ith interval 
+    and intervals is sorted in ascending order by starti. You are also given an interval 
+    newInterval = [start, end] that represents the start and end of another interval.
+    Insert newInterval into intervals such that intervals is still sorted in ascending order by starti and intervals still does not have any overlapping intervals (merge overlapping intervals if necessary).
+    Return intervals after the insertion.
+    Example 1:
+    Input: intervals = [[1,3],[6,9]], newInterval = [2,5]
+    Output: [[1,5],[6,9]]
+    '''
+
+    def insert_and_merge_intervals(self, intervals, newInterval):
+        result = []
+        i = 0
+        n = len(intervals)
+        # Add all intervals before newInterval
+        while i < n and intervals[i][1] < newInterval[0]:
+            result.append(intervals[i])
+            i += 1
+
+        # Merge overlapping intervals with newInterval
+        while i < n and intervals[i][0] <= newInterval[1]:
+            newInterval[0] = min(newInterval[0], intervals[i][0])
+            newInterval[1] = max(newInterval[1], intervals[i][1])
+            i += 1
+        result.append(newInterval)
+
+        # Add remaining intervals
+        while i < n:
+            result.append(intervals[i])
+            i += 1
+        return result
+
+    '''
+    Problem: https://leetcode.com/problems/subtree-of-another-tree/description/?envType=problem-list-v2&envId=oizxjoit
+    572. Subtree of Another Tree
+    Given the roots of two binary trees root and subRoot, return true if there is a subtree of root with 
+    the same structure and node values of subRoot and false otherwise.A subtree of a binary tree tree is a
+    tree that consists of a node in tree and all of this node's descendants. 
+    The tree tree could also be considered as a subtree of itself.
+    '''
+
+    def isSubtree(self, root: TreeNode, subRoot: TreeNode) -> bool:
+        if not root:
+            return False
+
+        if self.isSameTree(root, subRoot):
+            return True
+
+        return self.isSubtree(root.left, subRoot) or self.isSubtree(root.right, subRoot)
+
+    def isSameTree(self, s: TreeNode, t: TreeNode) -> bool:
+        if not s and not t:
+            return True
+        if not s or not t:
+            return False
+        if s.val != t.val:
+            return False
+        return self.isSameTree(s.left, t.left) and self.isSameTree(s.right, t.right)
 
 x = Blind75()
+
+'''
 # Example
 matrix = [[1,2,3],[4,5,6],[7,8,9]]
 print(x.spiralOrder(matrix))  # Output: [1,2,3,6,9,8,7,4,5]
-
-
 # Example usage:
 print(x.max_subarray_sum([-2,1,-3,4,-1,2,1,-5,4]))  # Output: 6
 print(x.max_subarray_sum([1]))                     # Output: 1
-
-
-
 # print(x.get_decode_string('4#lint4#code4#love3#you'))
 # print(x.get_subsets([2, 3, 6, 7]))
 matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 #print(x.rotate(matrix))
 print(x.erase_overlap_interval([[1,2],[3,4],[2,5],[8,9]]))
-
-'''
+# Examples
+print(x.canJump([2, 3, 1, 1, 4]))  # Output: True
+print(x.canJump([3, 2, 1, 0, 4]))  # Output: False
+print(x.merge_intervals([[1, 2], [3, 6], [8, 10], [15, 18]]))
 linkedList = x.get_linkedList()
 x.print(linkedList)
 print('********************')
 outputLinkedList = x.remove_node(linkedList, 1)
 x.print(outputLinkedList)
+print(x.merge_new_interval([[1,3],[6,9]],[10,15]))
+intervals = [[1,3],[6,9]]
+newInterval = [2,5]
+print(x.insert_and_merge_intervals(intervals, newInterval))
 '''
 
 # beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log","cog"]
