@@ -1,5 +1,6 @@
 from collections import Counter
 from collections import deque
+from collections import defaultdict
 
 
 class LinkNode:
@@ -613,6 +614,35 @@ class Blind75:
         return result
 
     '''
+    Find interval intersaction
+    interval1 = [[0,2],[5,10]]
+    interval2 = [[1,5],[8,12]]
+    output = [[1,2],[5,5],[8,10]]
+    '''
+
+    def get_intervals_intersaction(self,interval1,interval2):
+        result = []
+        i,j = 0,0
+        while i < len(interval1) and j < len(interval2):
+            start = max(interval1[i][0],interval2[j][0])
+            end = min(interval1[i][1],interval2[j][1])
+
+            if start <= end:
+                result.append([start,end])
+            # move pointer that has the smaller end
+
+            if interval1[i][1] < interval2[j][1]:
+                i +=1
+            else:
+                j +=1
+        return result
+    '''
+     
+    
+    '''
+
+
+    '''
     Problem: https://leetcode.com/problems/subtree-of-another-tree/description/?envType=problem-list-v2&envId=oizxjoit
     572. Subtree of Another Tree
     Given the roots of two binary trees root and subRoot, return true if there is a subtree of root with 
@@ -639,7 +669,229 @@ class Blind75:
             return False
         return self.isSameTree(s.left, t.left) and self.isSameTree(s.right, t.right)
 
+    '''
+    Problem : Unique paths. 
+    There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
+    Given the two integers m and n, return the number of possible unique paths that the robot can take to reach the bottom-right corner.
+    The test cases are generated so that the answer will be less than or equal to 2 * 10^9.
+    
+    Example : Input: m = 3, n = 7
+    Output: 28
+    
+    '''
+
+    def uniquePaths(self, m: int, n: int) -> int:
+        # Create a 2D grid initialized with 1s
+        dp = [[1] * n for _ in range(m)]
+
+        # Fill the grid using the relation:
+        # dp[i][j] = dp[i-1][j] + dp[i][j-1]
+        for i in range(1, m):
+            for j in range(1, n):
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
+        return dp[m - 1][n - 1]
+
+    '''
+    Reverse bits of a given 32 bits unsigned integer.
+    Example 1:
+    
+    Input: n = 00000010100101000001111010011100
+    Output:    964176192 (00111001011110000010100101000000)
+    Explanation: The input binary string 00000010100101000001111010011100 represents the unsigned integer 43261596, 
+    so return 964176192 which its binary representation is 00111001011110000010100101000000.
+    '''
+
+    def reverseBits(self, n: int) -> int:
+        result = 0
+        for _ in range(32):
+            result = (result << 1) | (n & 1)
+            n >>= 1
+        return result
+
+    def int_to_binary(self, num):
+        binary = ""
+        while num > 0:
+            bit = num % 2
+            binary = str(bit) + binary
+            num = num // 2
+        return binary
+
+    '''
+    Example : find the next greater element. 
+    Example: input=[1,4,6,3,2,7]--> output : [4,6,7,7,7,-1].give me python code
+    '''
+
+    def next_greater_elements(self, nums):
+        result = [-1] * len(nums)
+        stack = []
+
+        for i in range(len(nums)):
+            while stack and nums[i] > nums[stack[-1]]:
+                idx = stack.pop()
+                result[idx] = nums[i]
+            stack.append(i)  # hint we are saving index
+
+        return result
+
+    '''
+      window sizing
+    '''
+
+    def sliding_window_example(nums):
+        window_size = 3
+        for i in range(len(nums) - window_size + 1):
+            window = nums[i:i + window_size]
+            print(f"Window {i + 1}: {window}")
+
+    def sliding_window_sum(self, input):
+        window_size = 3
+        result = []
+        for i in range(0, len(input) - window_size + 1):
+            result.append(sum(input[i:i + window_size]))
+        return result
+
+    def longest_nonrepeat(self, input):
+        start = 0
+        dict = defaultdict(int)
+        visited = []
+
+        for end in range(1, len(input)):
+            substr = input[start:end]
+
+    '''
+    Example 1:
+    Input: nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3
+    Output: [1,2,2,3,5,6]
+    Explanation: The arrays we are merging are [1,2,3] and [2,5,6].
+    The result of the merge is [1,2,2,3,5,6] with the underlined elements coming from nums1.
+    Input: nums1 = [1], m = 1, nums2 = [], n = 0
+    Output: [1]
+    Explanation: The arrays we are merging are [1] and [].
+    The result of the merge is [1].
+    '''
+
+    def merge_sorted_array(self, nums1, m: int, nums2, n: int):
+        """
+        Do not return anything, modify nums1 in-place instead.
+        """
+        i = j = 0
+        result = []
+        while i < m and j < n:
+            if nums1[i] < nums2[j]:
+                result.append(nums1[i])
+                i += 1
+            else:
+                result.append(nums2[j])
+                j += 1
+        while i < m:
+            result.append(nums1[i])
+            i += 1
+        while j < n:
+            result.append(nums2[j])
+            j += 1
+        return result
+
+    def myPow(self, x: float, n: int) -> float:
+        result = 1
+        for i in range(abs(n)):
+            result = result * abs(x)
+        if n > 0:
+            return result
+        else:
+            return 1 / result
+
+    '''
+        Simplify Path.Example 1:
+    Input: path = "/home/"
+    Output: "/home"
+    
+    Explanation:
+    The trailing slash should be removed.
+    Example 2:
+    Input: path = "/home//foo/"
+    Output: "/home/foo"
+    Explanation:
+    Multiple consecutive slashes are replaced by a single one.
+    Example 3:
+    Input: path = "/home/user/Documents/../Pictures"
+    '''
+
+    def simplifyPath(self, path: str) -> str:
+        stack = []
+        parts = path.split('/')
+
+        for part in parts:
+            if part == '' or part == '.':
+                continue  # skip empty and current directory
+            elif part == '..':
+                if stack:
+                    stack.pop()  # go up one directory
+            else:
+                stack.append(part)  # valid folder name
+
+        return '/' + '/'.join(stack)
+
+    def max_sum_subarray(self, input):
+        current_sum = input[0]
+        max_sum = input[0]
+        for num in input[1:]:
+            current_sum = max(current_sum + num, num)
+            max_sum = max(current_sum, max_sum)
+        return max_sum
+
+    '''
+    # aeexyz,k=2---> answer aee
+    # abcd,k=2---> none
+    # aeedfge--> edfge
+    '''
+
+    def get_repeated_chars_string(self, input, k):
+        right = 0
+        left = 0
+        dict = {}
+        result = ''
+        while right < len(input):
+            print(right)
+            print(left)
+            dict[input[right]] = dict.get(input[right], 0) + 1
+            if max(dict.values()) == k:
+                if len(input[left:right+ 1]) > len(result):
+                    result = input[left:right+ 1]
+                    left = right
+                    dict={}
+                    dict[input[right]] = 1
+            right = right + 1
+        return result
+
+    def get_non_repeated_substring(self,input):
+        right = 0
+        left = 0
+        visited = []
+        result = ''
+
+        while right < len(input):
+            if input[right] in visited:
+                if len(result) < len(input[left:right]):
+                    result = input[left:right]
+                    visited = [input[right]]
+                    left = right
+            else:
+                visited.append(input[right])
+            right = right +1
+        if visited:
+            if len(result) > len(visited):
+                return result
+            else:
+                return ''.join(visited)
+
+
+
+
 x = Blind75()
+# print(x.sliding_window_sum([1, 2, 3, 4, 5, 6]))
+# print(x.simplifyPath("/home/test"))
+# print(x.max_sum_subarray([1, 2, 3, -8, 10]))
+print(x.get_non_repeated_substring('abcaefghi'))
 
 '''
 # Example
