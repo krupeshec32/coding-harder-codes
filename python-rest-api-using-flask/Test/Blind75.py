@@ -1,6 +1,7 @@
 from collections import Counter
 from collections import deque
 from collections import defaultdict
+import heapq
 
 
 class LinkNode:
@@ -620,27 +621,89 @@ class Blind75:
     output = [[1,2],[5,5],[8,10]]
     '''
 
-    def get_intervals_intersaction(self,interval1,interval2):
+    def get_intervals_intersaction(self, interval1, interval2):
         result = []
-        i,j = 0,0
+        i, j = 0, 0
         while i < len(interval1) and j < len(interval2):
-            start = max(interval1[i][0],interval2[j][0])
-            end = min(interval1[i][1],interval2[j][1])
+            start = max(interval1[i][0], interval2[j][0])
+            end = min(interval1[i][1], interval2[j][1])
 
             if start <= end:
-                result.append([start,end])
+                result.append([start, end])
             # move pointer that has the smaller end
 
             if interval1[i][1] < interval2[j][1]:
-                i +=1
+                i += 1
             else:
-                j +=1
+                j += 1
         return result
+
     '''
-     
+    Minimum number of conference rooms needed
+    Input = [[0,30],[5,10],[15,20]]
+    output = 2 
     
     '''
 
+    def find_numbers_of_rooms(self, input):
+        if not input:
+            return 0
+        # Step 1: Sort by start time
+        input.sort(key=lambda x: x[0])
+        heap = []
+        for meeting in input:
+            start, end = meeting
+            # Free up a room if the current meeting starts after the earliest ending one
+            if heap and heap[0] <= start:
+                heapq.heappop(heap)
+                # Allocate current meeting
+            heapq.heappush(heap, end)
+            # The number of rooms needed is the size of the heap
+        return len(heap)
+
+    '''
+    intervals = [[1,2],[2,3],[3,4],[1,3]]
+    Minimum removal require to make other non-overlapping
+    
+    '''
+
+    def eraseOverlapIntervals(intervals):
+        if not intervals:
+            return 0
+        # Step 1: Sort by end time
+        intervals.sort(key=lambda x: x[1])
+
+        # Step 2: Initialize
+        end = intervals[0][1]
+        count = 0  # Count of overlapping intervals (to be removed)
+
+        # Step 3: Iterate through the rest
+        for i in range(1, len(intervals)):
+            start_i, end_i = intervals[i]
+            if start_i < end:
+                # Overlap → must remove this one
+                count += 1
+            else:
+                # No overlap → update last end
+                end = end_i
+        return count
+
+    def get_longest_non_repeat(self, input):
+        if len(input) == 0 or len(input) == 1:
+            return input
+        result = ''
+        start = 0
+        end = 1
+
+        while start < end < len(input):
+            if input[start] != input[end]:
+                end += 1
+            else:
+                if len(result) < len(input[start:end + 1]):
+                    result = input[start:end + 1]
+                start = end
+                end += 1
+        return result
 
     '''
     Problem: https://leetcode.com/problems/subtree-of-another-tree/description/?envType=problem-list-v2&envId=oizxjoit
@@ -758,6 +821,94 @@ class Blind75:
         for end in range(1, len(input)):
             substr = input[start:end]
 
+    def transverse_layer_by_layer(self, root):
+        if root is None:
+            return None
+        level = 0
+        queue = deque([(root, level)])
+        result = []
+        nodes_by_level = defaultdict(list)
+
+        while queue:
+            node, level = queue.popleft()
+            nodes_by_level[level].append(node.val)
+            if node.left:
+                queue.append((node.left, level + 1))
+            if node.right:
+                queue.append((node.right, level + 1))
+
+        for level in sorted(nodes_by_level):
+            result.append(nodes_by_level[level])
+
+        return result
+
+    def transverse_vertically(self, root):
+        if root is None:
+            return None
+
+        nodes_by_vertical = defaultdict(list)
+        queue = deque()
+        queue.append((root, 0, 0))
+        result = []
+        while queue:
+            node, row, col = queue.popleft()
+            nodes_by_vertical[col].append(node.val)
+            if node.left:
+                queue.append((node.left, row + 1, col - 1))
+            if node.right:
+                queue.append((node.right, row + 1, col + 1))
+
+        print(nodes_by_vertical)
+
+        for level in sorted(nodes_by_vertical):
+            result.append(nodes_by_vertical[level])
+
+        return result
+
+    def max_depth_of_tree(self, root):
+        max_depth = 1
+        queque = deque()
+        queque.append(root)
+        while queque:
+            node = queque.popleft()
+            if node.left:
+                queque.append(node.left)
+            elif node.right:
+                queque.append(node.right)
+            else:
+                continue
+            max_depth += 1
+        return max_depth
+
+    def is_symmetric(self, root):
+        if not root:
+            return True
+
+        def is_mirror(t1, t2):
+            if not t1 and not t2:
+                return True
+            if not t1 or not t2:
+                return False
+            if t1.val != t2.val:
+                return False
+
+            return is_mirror(t1.left, t2.right) and is_mirror(t1.right, t2.left)
+
+        return is_mirror(root.left, root.right)
+
+    def invert(self, root):
+        if root is None:
+            return None
+        # Swap the left and right children
+        root.left, root.right = self.invert(root.right), self.invert(root.left)
+
+        return root
+
+    def get_sum_of_tree(self, root):
+        if root is None:
+            return 0
+        return root.val + self.get_sum_of_tree(root.left) + self.get_sum_of_tree(root.right)
+
     '''
     Example 1:
     Input: nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3
@@ -855,15 +1006,15 @@ class Blind75:
             print(left)
             dict[input[right]] = dict.get(input[right], 0) + 1
             if max(dict.values()) == k:
-                if len(input[left:right+ 1]) > len(result):
-                    result = input[left:right+ 1]
+                if len(input[left:right + 1]) > len(result):
+                    result = input[left:right + 1]
                     left = right
-                    dict={}
+                    dict = {}
                     dict[input[right]] = 1
             right = right + 1
         return result
 
-    def get_non_repeated_substring(self,input):
+    def get_non_repeated_substring(self, input):
         right = 0
         left = 0
         visited = []
@@ -877,21 +1028,205 @@ class Blind75:
                     left = right
             else:
                 visited.append(input[right])
-            right = right +1
+            right = right + 1
         if visited:
             if len(result) > len(visited):
                 return result
             else:
                 return ''.join(visited)
 
+    '''
+    Minimum Window Substring
+    Problem: Minimum window in s which contains all the characters of t.
+    
+    Input: s = "ADOBECODEBANC", t = "ABC"
+    '''
 
+    def min_window(self, s: str, t: str) -> str:
+        if not s or not t:
+            return ""
+
+        t_count = Counter(t)
+        window_count = defaultdict(int)
+
+        have, need = 0, len(t_count)
+        res = [float("inf"), 0, 0]  # window length, left, right
+        left = 0
+
+        for right in range(len(s)):
+            char = s[right]
+            window_count[char] += 1
+
+            if char in t_count and window_count[char] == t_count[char]:
+                have += 1
+
+            while have == need:
+                # Update result if this window is smaller
+                if (right - left + 1) < res[0]:
+                    res = [right - left + 1, left, right]
+
+                # Shrink from left
+                window_count[s[left]] -= 1
+                if s[left] in t_count and window_count[s[left]] < t_count[s[left]]:
+                    have -= 1
+                left += 1
+
+        l, r = res[1], res[2]
+        return s[l:r + 1] if res[0] != float("inf") else ""
+
+    def has_path_sum(self, root, target):
+        if root is None:
+            return False
+
+        # If it's a leaf node
+        if root.left is None and root.right is None:
+            return root.val == target
+
+        # Recurse on left and right subtree with updated target
+        return (self.has_path_sum(root.left, target - root.val) or
+                self.has_path_sum(root.right, target - root.val))
+
+    def find_path_sum(self, root, target, path=None):
+        if root is None:
+            return []
+
+        if path is None:
+            path = []
+
+        path = path + [root.val]
+
+        # If it's a leaf and sum matches
+        if root.left is None and root.right is None and sum(path) == target:
+            return path
+
+        # Check left and right
+        left = self.find_path_sum(root.left, target, path)
+        if left:
+            return left
+
+        right = self.find_path_sum(root.right, target, path)
+        if right:
+            return right
+
+        return []
+
+    def get_max_sum_subarry(self, input, k):
+        n = len(input)
+        if k > n:
+            return 0
+        if k <= 0:
+            return 0
+        window_sum = sum(input[:k])
+        max_sum = window_sum
+        for i in range(k, n):
+            window_sum = window_sum + input[i] - input[i - k]
+            max_sum = max(window_sum, max_sum)
+        return max_sum
+
+        '''
+         2. Minimum Size Subarray Sum
+        Problem:
+        Find the minimal length of a contiguous subarray of which the sum ≥ target.
+        
+        Input:
+        target = 7, nums = [2,3,1,2,4,3]
+        Output:
+        2
+        Explanation:
+        Subarray [4,3] is the smallest with sum ≥ 7.
+         '''
+
+    def min_subarray_len(self, target, nums):
+        n = len(nums)
+        left = 0
+        current_sum = 0
+        min_length = float('inf')
+
+        for right in range(n):
+            current_sum += nums[right]
+
+            while current_sum >= target:
+                min_length = min(min_length, right - left + 1)
+                current_sum -= nums[left]
+                left += 1
+
+        return min_length if min_length != float('inf') else 0
+
+    '''
+    Permutation in String
+    Problem:
+    Check if one string is a permutation of a substring in another.
+    
+    Input:
+    s1 = "ab", s2 = "eidbaooo"
+    Output: True
+    Explanation: "ba" is a permutation of "ab" and exists in string
+    
+    
+    '''
+
+    def check_input(self, s1, s2):
+        if len(s1) > len(s2):
+            return False
+        if s1 is None:
+            return True
+        if s1 == s2:
+            return True
+        if s1 is None:
+            return False
+        l_s1 = len(s1)
+        window = s2[:l_s1]
+        s1_counter = Counter(s1)
+        if s1_counter == Counter(window):
+            return True
+        for i in range(l_s1, len(s2)):
+            new_char = s2[i]
+            old_char = s2[i - l_s1]
+            window[new_char] += 1
+            window[old_char] -= 1
+            if window[old_char] == 0:
+                del window[old_char]
+            if window == s1_counter:
+                return True
+        return False
 
 
 x = Blind75()
+tree = TreeNode(1)
+tree.left = TreeNode(2)
+tree.right = TreeNode(3)
+tree.left.left = TreeNode(4)
+tree.left.right = TreeNode(5)
+tree.left.left.left = TreeNode(6)
+tree.left.left.right = TreeNode(7)
+
+# print(x.get_sum_of_tree(tree))
+print(x.get_max_sum_subarry([2, 1, 25, 5, 1, 3, 2, -10], 3))
+# print(x.max_depth_of_tree(tree))
+
+#     1
+#    / \
+#   2   2
+#  / \ / \
+# 3  4 4  3
+
+symmentric_tree = TreeNode(1)
+symmentric_tree.left = TreeNode(2)
+symmentric_tree.right = TreeNode(2)
+symmentric_tree.left.left = TreeNode(3)
+symmentric_tree.left.right = TreeNode(4)
+symmentric_tree.right.left = TreeNode(4)
+symmentric_tree.right.right = TreeNode(3)
+# assert (x.is_symmetric(symmentric_tree))
+
+# print(x.min_window("ADOBECODEBANC","ABC"))
+# print(x.find_numbers_of_rooms([[0,30],[5,10],[15,20]]))
+# print(x.find_numbers_of_rooms([[0, 30], [5, 10], [15, 20]]))
+# print(x.get_non_repeated_substring('abcaa'))
 # print(x.sliding_window_sum([1, 2, 3, 4, 5, 6]))
 # print(x.simplifyPath("/home/test"))
 # print(x.max_sum_subarray([1, 2, 3, -8, 10]))
-print(x.get_non_repeated_substring('abcaefghi'))
+# print(x.get_non_repeated_substring('abcaefghi'))
 
 '''
 # Example

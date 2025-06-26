@@ -1,4 +1,5 @@
 from Node import Node
+from collections import deque
 '''
 Inorder (Left, Root, Right) : 4, 2, 5, 1, 3
 Preorder (Root, Left, Right) : 1 2 4 5 3 
@@ -30,6 +31,30 @@ class Tree_Traverse():
         self.postOrder(node.left)
         self.postOrder(node.right)
         print(node.data)
+
+    def transver_layer_by_layer(self,root):
+        '''
+        It is breath first search. So, first define deque
+        :param root:
+        :return:
+        '''
+        if root is None:
+            return []
+        queqe = deque([root])
+        result = []
+        while queqe:
+            level_size = len(queqe)
+            current_level = []
+            for _ in range(level_size):
+                node = queqe.popleft()
+                current_level.append(node.val)
+                if node.left:
+                    queqe.append(node.left)
+                if node.right:
+                    queqe.append(node.right)
+            result.append(current_level)
+        return result
+
 
 a = Tree_Traverse(0)
 root = Node(1)
