@@ -416,7 +416,8 @@ class Blind75:
         if not (min_val < root.data < max_val):
             return False
 
-        return self.is_BST_valid(root.left, min_val, root.data) and self.is_BST_valid(root.right.data, root.data, max_val)
+        return self.is_BST_valid(root.left, min_val, root.data) and self.is_BST_valid(root.right.data, root.data,
+                                                                                      max_val)
 
     # find longest substring palindrome
     # i.e. input: bmadam, output: madam
@@ -848,8 +849,6 @@ class Blind75:
             result.append(nodes_by_level[level])
         return result
 
-
-
     def tree_level_traverse(self, root, level, level_map):
         if root is None:
             return
@@ -1091,8 +1090,7 @@ class Blind75:
         l, r = res[1], res[2]
         return s[l:r + 1] if res[0] != float("inf") else ""
 
-
-    def check_inclusion(self,s1, s2):
+    def check_inclusion(self, s1, s2):
         len_s1 = len(s1)
         len_s2 = len(s2)
 
@@ -1461,11 +1459,11 @@ class Blind75:
             else:
                 result[num] = 1
 
-        #dict_sorted = sorted(result.items(), key=lambda x: x[1], reverse=True)
-        buckets = [[] for _ in range(len(input)+1)]
-        for num,frequency in result.items():
+        # dict_sorted = sorted(result.items(), key=lambda x: x[1], reverse=True)
+        buckets = [[] for _ in range(len(input) + 1)]
+        for num, frequency in result.items():
             buckets[frequency].append(num)
-        for i in range(len(buckets)-1,-1,-1):
+        for i in range(len(buckets) - 1, -1, -1):
             for num in buckets[i]:
                 answer.append(num)
             if len(answer) == k:
@@ -1479,15 +1477,14 @@ class Blind75:
         right = len(input) - 1
         while left < right:
             if input[left] <= input[right]:
-                max_area = max(max_area, min(input[left],input[right]) * (right - left))
+                max_area = max(max_area, min(input[left], input[right]) * (right - left))
                 left += 1
             else:
-                max_area = max(max_area, min(input[left],input[right]) * (right - left))
+                max_area = max(max_area, min(input[left], input[right]) * (right - left))
                 right -= 1
         return max_area
 
-
-    def trap(self,height):
+    def trap(self, height):
         if not height:
             return 0
 
@@ -1542,21 +1539,23 @@ class Blind75:
             # Continue with the next contiguous element only
             if start < len(nums):
                 helper(start + 1, path + [nums[start]], product * nums[start])
+
         for i in range(len(nums)):
             helper(i, [], 1)
         return result
-    def sum_continu(self,nums,target):
+
+    def sum_continu(self, nums, target):
         left = 0
         right = 0
         sum = 0
-        window_length=float("inf")
+        window_length = float("inf")
         while left <= right < len(nums):
-            sum = sum+nums[right]
+            sum = sum + nums[right]
             if sum > target:
                 sum = sum - nums[left]
                 left += 1
             if sum == target:
-                window_length = min(window_length,right-left+1)
+                window_length = min(window_length, right - left + 1)
             right += 1
         return window_length if window_length != float("inf") else 0
 
@@ -1568,7 +1567,7 @@ class Blind75:
     '''
     from collections import Counter
 
-    def check_inclusion(self,s1, s2):
+    def check_inclusion(self, s1, s2):
         len_s1 = len(s1)
         len_s2 = len(s2)
         if len_s1 > len_s2:
@@ -1623,25 +1622,42 @@ class Blind75:
         if not (min_val < root.data < max_val):
             return False
 
-        return (self.is_BST_valid(root.left,min_val,root.data) and self.is_BST_valid(root.right.data,root.data,max_val))
+        return (self.is_BST_valid(root.left, min_val, root.data) and self.is_BST_valid(root.right.data, root.data,
+                                                                                       max_val))
 
-
-
-    def get_right_view (self, root):
+    def get_right_view(self, root):
         queue = deque()
         result = []
-        queue.append()
+        queue.append(root)
 
         while queue:
             n = len(queue)
             for i in range(n):
                 node = queue.popleft()
-                if i == n-1:
+                if i == n - 1:
                     result.append(node.data)
             if root.left:
-                queue.append(root.left.val)
+                queue.append(root.left)
             if root.right:
-                queue.append(root.left.val)
+                queue.append(root.left)
+        return result
+
+    def get_left_view(self, root):
+        queue = deque()
+        result = []
+        queue.append(root)
+
+        while queue:
+            n = len(queue)
+            for i in range(n):
+                node = queue.popleft()
+                if i == n - 1:
+                    result.append(node.data)
+
+            if root.right:
+                queue.append(root.right)
+            if root.left:
+                queue.append(root.left)
         return result
 
 
@@ -1658,10 +1674,10 @@ tree.left.left.right = TreeNode(7)
 tree.left.left.left.left = TreeNode(8)
 '''
 # print(x.climbStairs(5))
-#print(x.check_inclusion("dcda","adc"))
-print(x.get_max_sliding([1, 3, -1, -3, 5, 3, 6, 7],3))
-#result = x.contrainer_water([1, 8, 6, 2, 5, 4, 8, 3, 7])
-#print(result)
+# print(x.check_inclusion("dcda","adc"))
+print(x.get_max_sliding([1, 3, -1, -3, 5, 3, 6, 7], 3))
+# result = x.contrainer_water([1, 8, 6, 2, 5, 4, 8, 3, 7])
+# print(result)
 # print(x.get_sum_of_tree(tree))
 # print(x.get_max_sum_subarry([2, 1, 25, 5, 1, 3, 2, -10], 3))
 # print(x.find_max_profit([5,1,2,5,7,11,13,4]))
