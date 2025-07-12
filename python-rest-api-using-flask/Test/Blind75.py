@@ -409,6 +409,15 @@ class Blind75:
         backtrack(0, [])
         return result
 
+    def is_BST_valid(self, root, min_val, max_val):
+        if root is None:
+            return True
+
+        if not (min_val < root.data < max_val):
+            return False
+
+        return self.is_BST_valid(root.left, min_val, root.data) and self.is_BST_valid(root.right.data, root.data, max_val)
+
     # find longest substring palindrome
     # i.e. input: bmadam, output: madam
     # i.e. input: madamb, output: madam
@@ -828,7 +837,6 @@ class Blind75:
         queue = deque([(root, level)])
         result = []
         nodes_by_level = defaultdict(list)
-
         while queue:
             node, level = queue.popleft()
             nodes_by_level[level].append(node.val)
@@ -836,11 +844,20 @@ class Blind75:
                 queue.append((node.left, level + 1))
             if node.right:
                 queue.append((node.right, level + 1))
-
         for level in sorted(nodes_by_level):
             result.append(nodes_by_level[level])
-
         return result
+
+
+
+    def tree_level_traverse(self, root, level, level_map):
+        if root is None:
+            return
+
+        level_map[level].append(root.data)
+
+        self.tree_level_traverse(root.left, level + 1, level_map)
+        self.tree_level_traverse(root.right, level + 1, level_map)
 
     def transverse_vertically(self, root):
         if root is None:
@@ -1056,7 +1073,7 @@ class Blind75:
         for right in range(len(s)):
             char = s[right]
             window_count[char] += 1
-
+            print(window_count)
             if char in t_count and window_count[char] == t_count[char]:
                 have += 1
 
@@ -1073,6 +1090,34 @@ class Blind75:
 
         l, r = res[1], res[2]
         return s[l:r + 1] if res[0] != float("inf") else ""
+
+
+    def check_inclusion(self,s1, s2):
+        len_s1 = len(s1)
+        len_s2 = len(s2)
+
+        if len_s1 > len_s2:
+            return False
+
+        s1_count = Counter(s1)
+        window_count = Counter(s2[:len_s1])
+
+        if window_count == s1_count:
+            return True
+
+        for i in range(len_s1, len_s2):
+            start_char = s2[i - len_s1]
+            new_char = s2[i]
+
+            window_count[new_char] += 1
+            window_count[start_char] -= 1
+
+            if window_count[start_char] == 0:
+                del window_count[start_char]  # clean up to keep comparison efficient
+
+            if window_count == s1_count:
+                return True
+        return False
 
     def has_path_sum(self, root, target):
         if root is None:
@@ -1190,18 +1235,436 @@ class Blind75:
                 return True
         return False
 
+    def find_max_profit(self, input):
+
+        left = 0
+        current_profit = 0
+        for right in range(len(input)):
+            if input[right] < input[left]:
+                left = right
+            diff = input[right] - input[left]
+            current_profit = max(current_profit, diff)
+        return current_profit
+
+    '''
+    2.3
+    Longest
+    Palindromic
+    Substring
+    Input: s = "babad"
+    Output: "bab" or "aba"
+    '''
+
+    def expand_from_center(self, s, left, right):
+        while left >= 0 and right < len(s) and s[left] == s[right]:
+            left -= 1
+            right += 1
+        return s[left + 1:right]
+
+    def get_longest_palindrm(self, s):
+        result = ''
+        for i in range(len(s)):
+            odd = self.expand_from_center(s, i, i)
+            even = self.expand_from_center(s, i, i + 1)
+
+            if len(odd) > len(result):
+                result = odd
+            if len(even) > len(result):
+                result = even
+        return result
+
+    def is_binary_tree_valid(self, root):
+        def helper(node, min_val, max_val):
+            if not node:
+                return True
+            if not (min_val < node.val < max_val):
+                return False
+            return (helper(node.left, min_val, node.val) and
+                    helper(node.right, node.val, max_val))
+
+        return helper(root, float('-inf'), float('inf'))
+
+    def get_coins_combination(self, coins, target):
+        result = []
+
+        def backtrack(start, path, sum):
+            if sum == target:
+                result.append(path[:])
+                return
+            if sum > target:
+                return
+            for i in range(start, len(coins)):
+                backtrack(i + 1, path + [coins[i]], sum + coins[i])
+
+        backtrack(0, [], 0)
+        return result
+
+    ##########################
+
+    def climbStairs(self, n):
+        if n <= 2:
+            return n
+
+        first = 1  # ways to reach step 1
+        second = 2  # ways to reach step 2
+
+        for _ in range(3, n + 1):
+            third = first + second
+            first = second
+            second = third
+        return second
+
+    '''
+    def get_combination(self, input):
+        result = []
+
+        def helper(path):
+            if len(path) == len(input):
+                answer = ''.join(path[:])
+                result.append(answer)
+                return
+            for ch in input:
+                helper(path + [ch])
+
+        helper([])
+        return result
+    '''
+
+    def get_subset(self, nums):
+        result = []
+
+        def helpernew(start, path):
+            result.append(path)  # make a copy of current subset
+
+            for i in range(start, len(nums)):
+                # path.append(nums[i])
+                helpernew(i, path + [nums[i]])  # move forward to avoid duplicates
+                # path.pop()  # backtrack
+
+        helpernew(0, [])
+        return result
+
+    def get_combination(self, input):
+        result = []
+
+        def helper(start, path):
+            if len(path) == len(input):
+                result.append(''.join(path))
+                return
+
+            for i in range(start, len(input)):
+                char = input[i]
+
+                if char.isalpha():
+                    # Option 1: keep as-is
+                    helper(i + 1, path + [char])
+                    # Option 2: flip case
+                    flipped = char.upper() if char.islower() else char.lower()
+                    helper(i + 1, path + [flipped])
+                else:
+                    # Just one option for non-alphabet: keep as-is
+                    helper(i + 1, path + [char])
+                # ✅ Break here: we only want to flip **one** position per level
+                # break
+
+        helper(0, [])
+        return result
+
+    def get_permutations(self, nums):
+        result = []
+        used = [False] * len(nums)
+
+        def backtrack(path):
+            if len(path) == len(nums):
+                result.append(path[:])
+                return
+            for i in range(len(nums)):
+                if not used[i]:
+                    used[i] = True
+                    backtrack(path + [nums[i]])
+                    used[i] = False
+
+        backtrack([])
+        return result
+
+    def min_nums_of_coins(self, coins, target):
+        dp = [target] * (target + 1)
+        dp[0] = 0
+        print(dp)
+        for coin in coins:
+            for amount in range(1, target + 1):
+                if amount >= coin:
+                    dp[amount] = min(dp[amount], dp[amount - coin] + 1)
+        if dp[amount] != 0:
+            return dp[amount]
+        else:
+            return -1
+
+    def coin_change_combinations(self, coins, target):
+        result = []
+
+        def backtrack(start, path, total):
+            if total == target:
+                result.append(path[:])
+                return
+            if total > target:
+                return  # prune the branch
+
+            for i in range(start, len(coins)):
+                coin = coins[i]
+                path.append(coin)
+                backtrack(i + 1, path, total + coin)  # reuse allowed → i
+                path.pop()  # backtrack
+
+        backtrack(0, [], 0)
+        return result
+
+    def bounded_coin_change(coin_bank, target):
+        result = []
+        coins = list(coin_bank.keys())
+
+        def backtrack(index, path, total, remaining_bank):
+            if total == target:
+                result.append(path[:])
+                return
+            if total > target or index >= len(coins):
+                return
+
+            coin = coins[index]
+            max_count = remaining_bank[coin]
+
+            for count in range(0, max_count + 1):
+                new_total = total + coin * count
+                if new_total > target:
+                    break
+                new_path = path + [coin] * count
+                new_remaining = remaining_bank.copy()
+                new_remaining[coin] -= count
+                backtrack(index + 1, new_path, new_total, new_remaining)
+
+        backtrack(0, [], 0, coin_bank.copy())
+        return result
+
+    '''
+    nums = [1, 1, 1, 2, 2, 3]
+    k = 2
+    expected output = [1,2]
+    '''
+
+    def get_top_kth_frequent_element(self, input, k):
+        result = {}
+        answer = []
+
+        for num in input:
+            if num in result:
+                result[num] = result[num] + 1
+            else:
+                result[num] = 1
+
+        #dict_sorted = sorted(result.items(), key=lambda x: x[1], reverse=True)
+        buckets = [[] for _ in range(len(input)+1)]
+        for num,frequency in result.items():
+            buckets[frequency].append(num)
+        for i in range(len(buckets)-1,-1,-1):
+            for num in buckets[i]:
+                answer.append(num)
+            if len(answer) == k:
+                return answer
+        return answer
+
+    # heights = [1, 8, 25, 2, 5, 4, 8, 25, 7]
+    def contrainer_water(self, input):
+        max_area = 0
+        left = 0
+        right = len(input) - 1
+        while left < right:
+            if input[left] <= input[right]:
+                max_area = max(max_area, min(input[left],input[right]) * (right - left))
+                left += 1
+            else:
+                max_area = max(max_area, min(input[left],input[right]) * (right - left))
+                right -= 1
+        return max_area
+
+
+    def trap(self,height):
+        if not height:
+            return 0
+
+        left = 0
+        right = len(height) - 1
+        left_max = 0
+        right_max = 0
+        water_trapped = 0
+
+        while left < right:
+            if height[left] < height[right]:
+                # Update max height from left
+                if height[left] >= left_max:
+                    left_max = height[left]
+                else:
+                    water_trapped += left_max - height[left]
+                left += 1
+            else:
+                # Update max height from right
+                if height[right] >= right_max:
+                    right_max = height[right]
+                else:
+                    water_trapped += right_max - height[right]
+                right -= 1
+
+        return water_trapped
+
+    def get_contiguous_combinations_product(self, nums, target):
+        result = []
+
+        def helper(start, path, product):
+            if product >= target:
+                return
+            if path:
+                result.append(path[:])
+            # Continue with the next contiguous element only
+            if start < len(nums):
+                helper(start + 1, path + [nums[start]], product * nums[start])
+
+        for i in range(len(nums)):
+            helper(i, [], 1)
+        return result
+
+    def get_contiguous_combinations_product_old(self, nums, target):
+        result = []
+
+        def helper(start, path, product):
+            if product >= target:
+                return
+            if path:
+                result.append(path[:])
+            # Continue with the next contiguous element only
+            if start < len(nums):
+                helper(start + 1, path + [nums[start]], product * nums[start])
+        for i in range(len(nums)):
+            helper(i, [], 1)
+        return result
+    def sum_continu(self,nums,target):
+        left = 0
+        right = 0
+        sum = 0
+        window_length=float("inf")
+        while left <= right < len(nums):
+            sum = sum+nums[right]
+            if sum > target:
+                sum = sum - nums[left]
+                left += 1
+            if sum == target:
+                window_length = min(window_length,right-left+1)
+            right += 1
+        return window_length if window_length != float("inf") else 0
+
+    '''
+    s1 = "adc"
+    s2 = "dcda"
+    Output:
+    True
+    '''
+    from collections import Counter
+
+    def check_inclusion(self,s1, s2):
+        len_s1 = len(s1)
+        len_s2 = len(s2)
+        if len_s1 > len_s2:
+            return False
+        s1_count = Counter(s1)
+        window_count = Counter(s2[:len_s1])
+
+        if window_count == s1_count:
+            return True
+        for i in range(len_s1, len_s2):
+            start_char = s2[i - len_s1]
+            new_char = s2[i]
+
+            window_count[new_char] += 1
+            window_count[start_char] -= 1
+
+            if window_count[start_char] == 0:
+                del window_count[start_char]  # clean up to keep comparison efficient
+            if window_count == s1_count:
+                return True
+        return False
+
+    '''
+    nums = [1, 3, -1, -3, 5, 3, 6, 7]
+    k = 3. Output = [3, 3, 5, 5, 6, 7]
+    '''
+
+    def get_max_sliding(num, k):
+        q = deque()
+        result = []
+
+        for i in range(len(num)):
+            # Remove indices out of window
+            if q and q[0] <= i - k:
+                q.popleft()
+
+            # Remove smaller elements from the back
+            while q and num[q[-1]] < num[i]:
+                q.pop()
+
+            q.append(i)
+
+            # Append max (front of deque) once we have the first full window
+            if i >= k - 1:
+                result.append(num[q[0]])
+        return result
+
+    def is_BST_valid(self, root, min_val, max_val):
+        if root is None:
+            return True
+
+        if not (min_val < root.data < max_val):
+            return False
+
+        return (self.is_BST_valid(root.left,min_val,root.data) and self.is_BST_valid(root.right.data,root.data,max_val))
+
+
+
+    def get_right_view (self, root):
+        queue = deque()
+        result = []
+        queue.append()
+
+        while queue:
+            n = len(queue)
+            for i in range(n):
+                node = queue.popleft()
+                if i == n-1:
+                    result.append(node.data)
+            if root.left:
+                queue.append(root.left.val)
+            if root.right:
+                queue.append(root.left.val)
+        return result
+
 
 x = Blind75()
 tree = TreeNode(1)
 tree.left = TreeNode(2)
 tree.right = TreeNode(3)
 tree.left.left = TreeNode(4)
+'''
+
 tree.left.right = TreeNode(5)
 tree.left.left.left = TreeNode(6)
 tree.left.left.right = TreeNode(7)
-
+tree.left.left.left.left = TreeNode(8)
+'''
+# print(x.climbStairs(5))
+#print(x.check_inclusion("dcda","adc"))
+print(x.get_max_sliding([1, 3, -1, -3, 5, 3, 6, 7],3))
+#result = x.contrainer_water([1, 8, 6, 2, 5, 4, 8, 3, 7])
+#print(result)
 # print(x.get_sum_of_tree(tree))
-print(x.get_max_sum_subarry([2, 1, 25, 5, 1, 3, 2, -10], 3))
+# print(x.get_max_sum_subarry([2, 1, 25, 5, 1, 3, 2, -10], 3))
+# print(x.find_max_profit([5,1,2,5,7,11,13,4]))
 # print(x.max_depth_of_tree(tree))
 
 #     1
