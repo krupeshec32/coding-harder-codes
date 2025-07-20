@@ -109,6 +109,45 @@ class Test:
     ✅ Output:[1, 1, 1, 0]
     '''
 
+    '''
+    target = 12
+    position = [10, 8, 0, 5, 3]
+    speed =    [2, 4, 1, 1, 3]
+    
+    Output : 3
+    '''
+    def carFleet(self,target, position, speed):
+        # Pair up cars with their time to reach the target
+        cars = sorted(zip(position, speed), reverse=True)  # Sort by position descending
+        stack = []
+
+        for pos, spd in cars:
+            time = (target - pos) / spd
+            # Only add to stack if it forms a new fleet
+            if not stack or time > stack[-1]:
+                stack.append(time)
+        return len(stack)
+
+    '''
+    temperatures = [73, 74, 75, 71, 69, 72, 76, 73]
+    ✅ Output:[1, 1, 4, 2, 1, 1, 0, 0]
+    
+    temperatures = [30, 40, 50, 60]
+    output :[1, 1, 1, 0]
+    
+    '''
+
+    def dailyTemperatures(temperatures):
+        n = len(temperatures)
+        answer = [0] * n
+        stack = []  # stores indices
+        for i in range(n):
+            # Check for a warmer temperature than what’s on top of the stack
+            while stack and temperatures[i] > temperatures[stack[-1]]:
+                prev_index = stack.pop()
+                answer[prev_index] = i - prev_index
+            stack.append(i)
+        return answer
 x = Test()
 print(x.wordLadder("hit","cog",["hot", "dot", "dog", "lot", "log", "cog"]))
 
