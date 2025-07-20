@@ -13,9 +13,9 @@ class MoveMatrixDownRight:
             return
         paths.append(input[i][j])
 
-        if ((i >= 0) and (i <= row - 1) and (j + 1 > 0) and (j + 1 <= col - 1)):
+        if (i >= 0) and (i <= row - 1) and (j + 1 > 0) and (j + 1 <= col - 1):
             self.getPaths(input, i, j + 1, paths)
-        if ((i + 1 > 0) and (i + 1 <= row - 1) and (j >= 0) and (j <= col - 1)):
+        if (i + 1 > 0) and (i + 1 <= row - 1) and (j >= 0) and (j <= col - 1):
             self.getPaths(input, i + 1, j, paths)
         paths.pop()
 

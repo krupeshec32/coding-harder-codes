@@ -1660,6 +1660,61 @@ class Blind75:
                 queue.append(root.left)
         return result
 
+    def vertical_order_traversal(self,root):
+        if not root:
+            return []
+
+        column_map = defaultdict(list)
+        queue = deque([(root, 0)])  # (node, column)
+
+        while queue:
+            node, col = queue.popleft()
+            column_map[col].append(node.data)
+
+            if node.left:
+                queue.append((node.left, col - 1))
+            if node.right:
+                queue.append((node.right, col + 1))
+
+        # Sort by column index and return values
+        return [column_map[x] for x in sorted(column_map.keys())]
+
+        '''
+    board = [
+      ['A','B','C','E'],
+      ['S','F','C','S'],
+      ['A','D','E','E']
+    ]
+    word = "ABCCED"
+    '''
+
+    def exists(board, word):
+        rows, cols = len(board), len(board[0])
+        visited = [[False] * cols for _ in range(rows)]
+
+        def dfs(r, c, i):
+            if len(word) == i:
+                return True
+
+            if r < 0 or r >= rows or c < 0 or c >= cols or visited[r][c]:
+                return False
+
+            if board[r][c] != word[i]:
+                return False
+
+            visited[r][c] = True
+
+            found = (dfs(r, c + 1, i + 1) or dfs(r + 1, c, i + 1) or dfs(r, c - 1, i + 1) or dfs(r - 1, c, i + 1))
+            visited[r][c] = False
+
+            return found
+
+        for i in range(rows):
+            for j in range(cols):
+                if board[i][j] == word[0] and dfs(r, c, 0):
+                    return True
+        return False
+
 
 x = Blind75()
 tree = TreeNode(1)
@@ -1675,7 +1730,7 @@ tree.left.left.left.left = TreeNode(8)
 '''
 # print(x.climbStairs(5))
 # print(x.check_inclusion("dcda","adc"))
-print(x.get_max_sliding([1, 3, -1, -3, 5, 3, 6, 7], 3))
+print(x.get_combinations_test([1,2,3]))
 # result = x.contrainer_water([1, 8, 6, 2, 5, 4, 8, 3, 7])
 # print(result)
 # print(x.get_sum_of_tree(tree))
