@@ -78,22 +78,22 @@ class Test:
     5 because "hit" → "hot" → "dot" → "dog" → "cog"
     '''
 
-    def wordLadder(self,beginWord,endword,wordList):
+    def wordLadder(self, beginWord, endword, wordList):
         word_set = set(wordList)
         if endword not in word_set:
             return 0
         queue = deque()
-        queue.append((beginWord,1))
+        queue.append((beginWord, 1))
         while queue:
-            word,start = queue.popleft()
+            word, start = queue.popleft()
             if word == endword:
                 return start
             for i in range(len(word)):
                 for c in 'abcdefghijklmnopqrstuvwxyz':
-                    new_word = word[:i]+c+word[i+1:]
+                    new_word = word[:i] + c + word[i + 1:]
                     if new_word in word_set:
                         word_set.remove(new_word)
-                        queue.append((new_word,start+1))
+                        queue.append((new_word, start + 1))
         return 0
 
     '''
@@ -116,7 +116,8 @@ class Test:
     
     Output : 3
     '''
-    def carFleet(self,target, position, speed):
+
+    def carFleet(self, target, position, speed):
         # Pair up cars with their time to reach the target
         cars = sorted(zip(position, speed), reverse=True)  # Sort by position descending
         stack = []
@@ -148,8 +149,89 @@ class Test:
                 answer[prev_index] = i - prev_index
             stack.append(i)
         return answer
+
+    # tokens = ["2", "1", "+", "3", "*"]
+
+    def evalRPN(self, tokens):
+        stack = []
+        for token in tokens:
+            if token in {"+", "-", "*", "/"}:
+                b = stack.pop()
+                a = stack.pop()
+                if token == "+":
+                    stack.append(a + b)
+                elif token == "-":
+                    stack.append(a - b)
+                elif token == "*":
+                    stack.append(a * b)
+                elif token == "/":
+                    # Integer division that truncates toward zero
+                    stack.append(int(a / b))
+            else:
+                stack.append(int(token))
+        return stack[0]
+
+    '''
+        Problem: Asteroid Collision
+    You are given an array of integers representing asteroids in a row.Each asteroid moves at the same speed.
+    Positive value → asteroid moving to the right.Negative value → asteroid moving to the left.
+    When two asteroids collide:The smaller one explodes.If they are the same size, both explode.Two asteroids moving in the same direction will never meet.
+    Your task: Return the state of the asteroids after all collisions.
+    
+    input :asteroids = [5, 10, -5] output : [5, 10]
+    asteroids = [8, -8] output : []
+    '''
+    # asteroids = [10, 2, -5]
+
+    def asteroidCollision(self, asteroids):
+        stack = []
+
+        for a in asteroids:
+            while stack and a < 0 < stack[-1]:
+                if stack[-1] < -a:
+                    stack.pop()  # Right asteroid is smaller; explode it
+                    continue
+                elif stack[-1] == -a:
+                    stack.pop()  # Both explode
+                break  # Left asteroid explodes or both explode, so stop checking
+            else:
+                stack.append(a)  # No collision, or after resolving collision
+
+        return stack
+
+    '''
+    Problem: Largest Rectangle in Histogram
+    You are given an array of integers representing the heights of bars in a histogram. Each bar has a width of 1.
+    Your task is to return the area of the largest rectangle that can be formed in the histogram.
+        Sample Input :
+    heights = [2, 1, 5, 6, 2, 3]
+    🔸 Expected Output 1:10
+    
+    🔹 Sample Input : heights = [2, 4]
+    🔸 Expected Output 2:4
+    '''
+    def largestRectangleArea(self,heights):
+        stack = []  # stores indices
+        max_area = 0
+        heights.append(0)  # Sentinel to flush the stack at the end
+
+        for i, h in enumerate(heights):
+            while stack and heights[stack[-1]] > h:
+                height = heights[stack.pop()]
+                # Width is current index i minus index of new stack top minus one
+                width = i if not stack else i - stack[-1] - 1
+                area = height * width
+                print(f"Popped height: {height}, Width: {width}, Area: {area}")
+                max_area = max(max_area, area)
+            stack.append(i)
+            print(f"Stack: {stack}")
+
+        return max_area
+
+
 x = Test()
-print(x.wordLadder("hit","cog",["hot", "dot", "dog", "lot", "log", "cog"]))
+print(x.asteroid([10, 2, -5]))
+# print(x.wordLadder("hit","cog",["hot", "dot", "dog", "lot", "log", "cog"]))
 
 
 '''
